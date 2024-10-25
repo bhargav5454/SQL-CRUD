@@ -10,10 +10,11 @@ import "./Product.css";
 import axios from "axios";
 
 const ProductList = () => {
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const dispatch = useDispatch();
-  const { product } = useSelector((state) => state.productData);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [quantities, setQuantities] = useState({});
+    const dispatch = useDispatch();
+    const { product } = useSelector((state) => state.productData);
 
   useEffect(() => {
     dispatch(fetchProduct({ endpoint: "/product/getAll" }));
