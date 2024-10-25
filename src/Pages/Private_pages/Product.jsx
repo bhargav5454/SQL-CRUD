@@ -8,7 +8,6 @@ import axios from 'axios';
 const ProductList = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
-    const [quantities, setQuantities] = useState({});
     const dispatch = useDispatch();
     const { product } = useSelector((state) => state.productData);
 
@@ -26,48 +25,26 @@ const ProductList = () => {
     };
 
     const handleEditSubmit = (e) => {
-        e.preventDefault();
-        dispatch(updateProduct({ endpoint: `/product/update`, productId: editingProduct.id, payload: editingProduct }));
-        setEditModalOpen(false);
-    };
+        e.preventDefault()
+        dispatch(updateProduct({ endpoint: "/product/update", productId: editingProduct.id, payload: editingProduct }))
+        setEditModalOpen(false)
+    }
 
     const handleDelete = (productId) => {
-        dispatch(deleteProduct({ endpoint: `/product/delete`, productId }));
+        dispatch(deleteProduct({ endpoint: "/product/delete", productId }))
     };
 
     const handleAddtoCart = (item) => {
         const payload = {
             productId: item.id,
-            quantity: quantities[item.id] || 1 // Default to 1 if not set
-        };
-        axios.post('http://localhost:8001/v1/cart/add', payload, {
-            headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhkMDgyY2UzLTRmMTAtNDVlNi04ZDZkLTZmOGVhZDI3MjhmOCIsImlhdCI6MTcyOTgzMTc5NCwiZXhwIjoxNzI5ODM1Mzk0fQ.ANbszrSVFQ3Us9wE13eLegIWpYF-JFwPdZ0s-5R9k9c',
-                'x-custom-access-id': '8d082ce3-4f10-45e6-8d6d-6f8ead2728f8'
+            quantity: 1
+        }
+        axios.post('http://localhost:8001/v1/cart/add',payload,{
+            headers:{
+                'Authorization': 'Bearer ' +'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhkMDgyY2UzLTRmMTAtNDVlNi04ZDZkLTZmOGVhZDI3MjhmOCIsImlhdCI6MTcyOTgzMTc5NCwiZXhwIjoxNzI5ODM1Mzk0fQ.ANbszrSVFQ3Us9wE13eLegIWpYF-JFwPdZ0s-5R9k9c',
+                'x-custom-access-id': "8d082ce3-4f10-45e6-8d6d-6f8ead2728f8"
             }
-        });
-    };
-
-    const incrementQuantity = (item) => {
-        setQuantities((prevQuantities) => ({
-            ...prevQuantities,
-            [item.id]: Math.min((prevQuantities[item.id] || 1) + 1, item.quantity)
-        }));
-    };
-
-    const decrementQuantity = (item) => {
-        setQuantities((prevQuantities) => ({
-            ...prevQuantities,
-            [item.id]: Math.max((prevQuantities[item.id] || 1) - 1, 1)
-        }));
-    };
-
-    const handleQuantityChange = (e, item) => {
-        const value = Math.max(1, Math.min(Number(e.target.value), item.quantity)); // Ensure value is between 1 and item.quantity
-        setQuantities((prevQuantities) => ({
-            ...prevQuantities,
-            [item.id]: value
-        }));
+        })
     };
 
     return (
@@ -102,33 +79,6 @@ const ProductList = () => {
                                     <p className="text-sm text-gray-500">Category: {item.category}</p>
                                     <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                                     <p className="text-2xl font-bold mt-4">${item.price.toFixed(2)}</p>
-
-                                    {/* Quantity Counter */}
-                                    <div className="flex items-center space-x-2">
-                                        <button
-                                            className="px-3 py-1 bg-gray-300 rounded"
-                                            onClick={() => decrementQuantity(item)}
-                                            disabled={quantities[item.id] === 1}
-                                        >
-                                            -
-                                        </button>
-                                        <input
-                                            type="number"
-                                            value={quantities[item.id] || 1}
-                                            onChange={(e) => handleQuantityChange(e, item)}
-                                            className="w-12 text-center border border-gray-300 rounded"
-                                            min="1"
-                                            max={item.quantity}
-                                        />
-                                        <button
-                                            className="px-3 py-1 bg-gray-300 rounded"
-                                            onClick={() => incrementQuantity(item)}
-                                            disabled={quantities[item.id] >= item.quantity}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-
                                     <button
                                         className="text-white bg-gray-700 hover:bg-green-600 rounded-lg text-sm px-4 py-2 mt-3"
                                         onClick={() => handleAddtoCart(item)}
